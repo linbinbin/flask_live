@@ -13,6 +13,7 @@ from camera import VideoCamera
 import unittest
 import sqlite3
 import time
+import base64
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -64,12 +65,15 @@ def after_request(response):
 
 class controller(Resource):          
     def put(self):
-        return {'Hello':'world'}
+        return {'Hello':'put'}
  
-    def get(sef):
-        app.logger.debug('controller get()')    
-        return gen(VideoCamera())
-
+    def get(self):
+        app.logger.debug('controller get()')
+        response = Flask.make_response(Flask, rv=gen(VideoCamera()))
+        #response.headers['content-type'] = 'application/octet-stream'
+        response.headers['content-type'] = 'image/jpeg'
+        return response
+        
 api.add_resource(controller,'/controller')
 init_db()
 
@@ -80,13 +84,16 @@ def hello():
 
 def gen(camera):
     frame = camera.get_frame()
-    yield (b'--frame\r\n'
-           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+    print (frame[:10])
+    #return frame
+    #return base64.b64encode(frame)
+    return (b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
               
 @app.route('/video_feed')
 def video_feed():
     return Response(gen(VideoCamera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-                    
+           
 if __name__=='__main__':
     app.run(debug=True)
