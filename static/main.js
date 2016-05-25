@@ -209,16 +209,18 @@
 
         imgTimer: function() {
             var $img = $('#mystream');
-            window.console.log("timer function");
             setInterval(function() {
                 $.ajax({
                     url: '/controller',
-                    success: function(data) {
-                        var base64String = btoa(data);
-                        $img.attr('src', "data:image/png;base64," +  base64String);
-                    }
-                });
-            }, 5000);   
+                    type: "GET",
+                    dataType: 'binary',
+                    headers:{'Content-Type':'image/jpeg','X-Requested-With':'XMLHttpRequest'},
+                    processData: false
+                }).done(function(data, textStatus, jqXHR) {
+                        window.console.log("timer function ");
+                        $img.attr('src', data);
+                    });
+            }, 2000);   
         },
 
         initialize : function() {
@@ -233,6 +235,22 @@
             self.imgTimer();
         }
     };
+
+        function stringToAsciiByteArray(str)
+        {
+            var bytes = [];
+            for (var i = 0; i < str.length; ++i)
+            {
+                var charCode = str.charCodeAt(i);
+                if (charCode > 0xFF)  // char > 1 byte since charCodeAt returns the UTF-16 value
+                {
+                    throw new Error('Character ' + String.fromCharCode(charCode) + ' can\'t be represented by a US-ASCII byte.');
+                }
+                bytes.push(charCode);
+            }
+            return bytes;
+        }
+        
 
     var self = smphController,
         el = self.elements,
