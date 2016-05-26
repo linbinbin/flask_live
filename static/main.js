@@ -218,9 +218,11 @@
                     processData: false
                 }).done(function(data, textStatus, jqXHR) {
                         window.console.log("timer function ");
-                        $img.attr('src', data);
+                        var urlCreator = window.URL || window.webkitURL;
+                        var imageUrl = urlCreator.createObjectURL(data);
+                        $img.attr('src', imageUrl);
                     });
-            }, 2000);   
+            }, 30);   
         },
 
         initialize : function() {
