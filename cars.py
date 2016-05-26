@@ -85,10 +85,10 @@ def hello():
 def gen(camera):
     frame = camera.get_frame()
     print (frame[:10])
-    #return frame
+    return frame
     #return base64.b64encode(frame)
-    return (b'--frame\r\n'
-            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+    #return (b'--frame\r\n'
+    #        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
               
 @app.route('/video_feed')
 def video_feed():
