@@ -209,7 +209,7 @@
 
         imgTimer: function() {
             var $img = $('#mystream');
-            setInterval(function() {
+            var tm = setInterval(function() {
                 $.ajax({
                     url: '/controller',
                     type: "GET",
