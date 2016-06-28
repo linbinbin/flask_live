@@ -27,6 +27,11 @@ users = {
     "susan": "bye"
     }
  
+def gen(camera):
+    while 1:
+        frame = camera.get_frame()
+        yield frame
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 api = Api(app)
@@ -63,14 +68,16 @@ def after_request(response):
     g.db.close()
     return response
 
-class controller(Resource):          
+class controller(Resource):
+    def __init__(self):
+        self.camera = gen(VideoCamera())
+
     def put(self):
         return {'Hello':'put'}
  
     def get(self):
-        app.logger.debug('controller get()')
-        response = Flask.make_response(Flask, rv=gen(VideoCamera()))
-        #response.headers['content-type'] = 'application/octet-stream'
+        app.logger.debug('controller get() ')
+        response = Flask.make_response(Flask, rv=self.camera.__next__())
         response.headers['content-type'] = 'image/jpeg'
         return response
         
@@ -81,14 +88,6 @@ init_db()
 @app.route("/")
 def hello():
     return render_template('controller.html', title="Kids cars")
-
-def gen(camera):
-    frame = camera.get_frame()
-    print (frame[:10])
-    #return frame
-    #return base64.b64encode(frame)
-    return (b'--frame\r\n'
-            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
               
 @app.route('/video_feed')
 def video_feed():
